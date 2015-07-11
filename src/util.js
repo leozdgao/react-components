@@ -52,10 +52,11 @@ export function removeClass(origin, className) {
 export function type(obj) {
   if(obj == null) return '' + obj; // null and undefined
 
-  if(typeof obj == 'object' || typeof obj == 'function') {
+  let t = typeof obj;
+  if(t == 'object' || t == 'function') {
     let m = /^[object (\w+)]$/.exec(toString.call(obj));
     if(m && m[1]) return m.toLowerCase();
     else return 'unknown';
   }
-  else return typeof obj;
+  else return t;
 }
