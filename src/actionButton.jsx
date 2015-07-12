@@ -8,7 +8,7 @@ export default React.createClass({
   propTypes: {
     action: React.PropTypes.oneOfType([
       React.PropTypes.func,
-      React.PropTypes.instanceOf(Promise)
+      React.PropTypes.object
     ]),
     onResolving: React.PropTypes.func,
     onResolved: React.PropTypes.func,
