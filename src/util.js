@@ -31,22 +31,32 @@ export function times(count, func, ...others) {
   }
 }
 
-export function once() {
-  return curry(times, null, 1);
+export function once(...args) {
+  return curry(times, null, 1).apply(null, args);
 }
 
 export function addClass(origin, className) {
-  let classes = origin.split(/\s+/);
-  if(classes.indexOf(className) < 0) classes.push(className);
+  if(type(origin) == 'string') {
+    if(origin == '') return className;
 
-  return classes.join(' ');
+    let classes = origin.split(/\s+/);
+    if(classes.indexOf(className) < 0) classes.push(className);
+
+    return classes.join(' ');
+  }
+
+  return '';
 }
 
 export function removeClass(origin, className) {
-  let classes = origin.split(/\s+/), index = classes.indexOf(className) < 0;
-  if(index > -1) classes.splice(index, 1);
+  if(type(origin) == 'string') {
+    let classes = origin.split(/\s+/), index = classes.indexOf(className);
+    if(index > -1) classes.splice(index, 1);
 
-  return classes.join(' ');
+    return classes.join(' ');
+  }
+
+  return '';
 }
 
 export function type(obj) {
@@ -54,8 +64,8 @@ export function type(obj) {
 
   let t = typeof obj;
   if(t == 'object' || t == 'function') {
-    let m = /^[object (\w+)]$/.exec(toString.call(obj));
-    if(m && m[1]) return m.toLowerCase();
+    let m = /^\[object (\w+)\]$/.exec(toString.call(obj));
+    if(m && m[1]) return m[1].toLowerCase();
     else return 'unknown';
   }
   else return t;

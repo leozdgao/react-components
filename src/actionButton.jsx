@@ -24,7 +24,7 @@ export default React.createClass({
   },
   getInitialState: function() {
     return {
-      className: this.props.className,
+      className: this.props.className || '',
       disabled: false
     };
   },
@@ -49,10 +49,9 @@ export default React.createClass({
         },
         onResolved = once(this.props.onResolved, rmLoadingClass),
         onError = once(this.props.onError, rmLoadingClass),
-        callback = (err) => {
+        callback = (err, ...args) => {
           if(err) onError.call(null, err);
           else {
-            args = slice.call(arguments, 1);
             onResolved.apply(null, args);
           }
         };
@@ -61,11 +60,11 @@ export default React.createClass({
         action.call(null, e, callback);
       }
       else {
-        let ret = action.call(null, e), then = action.then || ret.then;
-        if(type(then) == 'function') { // thenable;
-          then.call(null, onResolved, onError);
+        if(type(action) == 'object' && type(action.then) == 'function') { // action is promise
+          action.then.call(action, onResolved, onError);
         }
         else { // it is a sync action
+          let ret = action.call(null, e);
           onResolved.call(null, ret);
         }
       }
