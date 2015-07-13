@@ -1,10 +1,8 @@
 import React from 'react';
-import {addClass, removeClass, once, type} from './util';
-
-let noop = () => {};
-let predicate = () => { return true; };
+import {addClass, removeClass, once, type, noop, predicate, curry} from './util';
 
 export default React.createClass({
+  // define property types here
   propTypes: {
     action: React.PropTypes.oneOfType([
       React.PropTypes.func,
@@ -12,20 +10,28 @@ export default React.createClass({
     ]),
     onResolving: React.PropTypes.func,
     onResolved: React.PropTypes.func,
-    onError: React.PropTypes.func
+    onError: React.PropTypes.func,
+    only: React.PropTypes.bool
   },
   getDefaultProps: function() {
     return {
       action: noop,
       onResolving: predicate,
       onResolved: noop,
-      onError: noop
+      onError: noop,
+      only: true // disabled button when action is executing, if false, it will handled by property
     };
+  },
+  // handle disable property
+  componentWillReceiveProps: function(nextProps) {
+    if(nextProps.disabled != this.state.disabled) {
+      this.setState({disabled: nextProps.disabled});
+    }
   },
   getInitialState: function() {
     return {
       className: this.props.className || '',
-      disabled: false
+      disabled: this.props.disabled || false
     };
   },
   render () {
@@ -36,9 +42,12 @@ export default React.createClass({
       </button>
     );
   },
+  // handle click event here
   _handleClick (e) {
     // invoke onResolving before action, the action can be canceled if onResolving return false
-    if(!this.state.disabled && this.props.onResolving()) {
+    if(!this.state.disabled && this.props.onResolving() !== false) {
+      // set disable if set only to true
+      this._setDisableWhenOnly(true);
       // add class
       this.setState({className: addClass(this.state.className, 'loading')});
 
@@ -47,8 +56,9 @@ export default React.createClass({
         rmLoadingClass = () => {
           this.setState({className: removeClass(this.state.className, 'loading')});
         },
-        onResolved = once(this.props.onResolved, rmLoadingClass),
-        onError = once(this.props.onError, rmLoadingClass),
+        setDisable = curry(this._setDisableWhenOnly, this, false);
+        onResolved = once(this.props.onResolved, rmLoadingClass, setDisable),
+        onError = once(this.props.onError, rmLoadingClass, setDisable),
         callback = (err, ...args) => {
           if(err) onError.call(null, err);
           else {
@@ -68,6 +78,12 @@ export default React.createClass({
           onResolved.call(null, ret);
         }
       }
+    }
+  },
+  _setDisableWhenOnly (val) {
+    if(this.props.only) {
+      let proc = val ? addClass: removeClass;
+      this.setState({disabled: val, className: proc(this.state.className, 'disabled')});
     }
   }
 });

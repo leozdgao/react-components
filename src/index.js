@@ -1,5 +1,3 @@
-let components = {
+window.ReactCom = {
   ActionButton: require('./actionButton')
 };
-
-export default components;

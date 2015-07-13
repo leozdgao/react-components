@@ -1,4 +1,8 @@
-let slice = Array.prototype.slice, toString = Object.prototype.toString;
+let toString = Object.prototype.toString;
+
+export function noop () {}
+
+export function predicate () { return true; }
 
 export function curry(func, binding, ...oargs) {
   return (...args) => {
@@ -35,12 +39,14 @@ export function once(...args) {
   return curry(times, null, 1).apply(null, args);
 }
 
-export function addClass(origin, className) {
+export function addClass(origin, ...names) {
   if(type(origin) == 'string') {
-    if(origin == '') return className;
+    if(origin == '') return names.join(' ');
 
     let classes = origin.split(/\s+/);
-    if(classes.indexOf(className) < 0) classes.push(className);
+    for(let i = 0, l = names.length; i < l; i++) {
+      if(classes.indexOf(names[i]) < 0) classes.push(names[i]);
+    }
 
     return classes.join(' ');
   }
@@ -48,10 +54,14 @@ export function addClass(origin, className) {
   return '';
 }
 
-export function removeClass(origin, className) {
+export function removeClass(origin, ...names) {
   if(type(origin) == 'string') {
-    let classes = origin.split(/\s+/), index = classes.indexOf(className);
-    if(index > -1) classes.splice(index, 1);
+    let classes = origin.split(/\s+/);
+
+    for(let i = 0, l = names.length; i < l; i++) {
+      let index = classes.indexOf(names[i]);
+      if(index > -1) classes.splice(index, 1);
+    }
 
     return classes.join(' ');
   }
