@@ -1,5 +1,6 @@
 import React from 'react';
-import {addClass, removeClass, once, type, noop, predicate, curry} from './util';
+import cNames from 'classnames/dedupe';
+import {once, type, noop, predicate, curry} from './util';
 
 export default React.createClass({
   // define property types here
@@ -49,12 +50,12 @@ export default React.createClass({
       // set disable if set only to true
       this._setDisableWhenOnly(true);
       // add class
-      this.setState({className: addClass(this.state.className, 'loading')});
+      this.setState({className: cNames(this.state.className, 'loading')});
 
       // declare
       let action = this.props.action,
         rmLoadingClass = () => {
-          this.setState({className: removeClass(this.state.className, 'loading')});
+          this.setState({className: cNames(this.state.className, {'loading': false})});
         },
         setDisable = curry(this._setDisableWhenOnly, this, false);
         onResolved = once(this.props.onResolved, rmLoadingClass, setDisable),
@@ -82,8 +83,7 @@ export default React.createClass({
   },
   _setDisableWhenOnly (val) {
     if(this.props.only) {
-      let proc = val ? addClass: removeClass;
-      this.setState({disabled: val, className: proc(this.state.className, 'disabled')});
+      this.setState({disabled: val, className: cNames(this.state.className, {'disabled': val})});
     }
   }
 });
