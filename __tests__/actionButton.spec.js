@@ -1,21 +1,21 @@
-var React = require('react/addons');
-var Promise = require('promise');
-var ActionButton = require('../src/actionButton.jsx');
-var TestUtils = React.addons.TestUtils;
+import React from 'react/addons';
+import Promise from 'promise';
+import ActionButton from '../src/actionButton.jsx';
+let TestUtils = React.addons.TestUtils;
 
 jest.dontMock('../src/actionButton.jsx');
 
-var text = 'Submit', com, button;
-describe('Test component: ActionButton', function() {
-  it('take children as text', function() {
+let text = 'Submit', com, button;
+describe('Test component: ActionButton', () => {
+  it('take children as text', () => {
     com = TestUtils.renderIntoDocument(
       <ActionButton>{text}</ActionButton>
     );
     button = TestUtils.findRenderedDOMComponentWithTag(com, 'button');
     expect(button.getDOMNode().textContent).toEqual(text); // assert here
   });
-  it('execute a sync action', function() {
-    var action = function(e) {
+  it('execute a sync action', () => {
+    let action = (e) => {
       temp = e.value;
     }, temp;
     com = TestUtils.renderIntoDocument(
@@ -25,17 +25,17 @@ describe('Test component: ActionButton', function() {
     TestUtils.Simulate.click(button, {value: text});
     expect(temp).toEqual(text); // assert here
   });
-  it('execute an async action with callback', function() {
-    var action = function(e, callback) {
-      setTimeout(function() {
+  it('execute an async action with callback', () => {
+    let action = (e, callback) => {
+      setTimeout(() => {
         callback(null, text, 1);
       }, 200);
     };
     assertAsyncAction(action, text, 1);
   });
-  it.only('accept an action as a promise', function() {
-    var action = new Promise(function(resolve, reject) {
-      setTimeout(function() {
+  it('accept an action as a promise', () => {
+    let action = new Promise((resolve, reject) => {
+      setTimeout(() => {
         resolve(text);
       }, 200);
     });
