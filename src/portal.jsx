@@ -36,6 +36,13 @@ export default React.createClass({
   _getOverlay () {
     return React.Children.only(this.props.children);
   },
+  _getOverlayDOMNode () {
+    if(this._instance) {
+      return React.findDOMNode(this._instance);
+    }
+
+    return null;
+  },
   _triggerByProps (props) {
     if(props.show) {
       this._mountContainer(); // mount container and overlay

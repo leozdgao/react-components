@@ -7,21 +7,35 @@ describe('Test portal component', () => {
     render () {
       return (
         <div>
-          <Portal ref="p">
+          <Portal {...this.props} ref="p">
             {this.props.overlay}
           </Portal>
         </div>
       );
     },
     getPortalDOMNode () {
-      return React.findDOMNode(this.refs.p);
+      return this.refs.p._getOverlayDOMNode();
+    }
+  }), instance;
+  afterEach(() => {
+    // unmount test component
+    if(instance && TestUtils.isCompositeComponent(instance) && instance.isMounted()) {
+      React.unmountComponentAtNode(React.findDOMNode(instance));
     }
   });
   it('only take first children as overlay', () => {
-    let com = TestUtils.renderIntoDocument((
-      <TestPortal overlay={<div>Test</div>}></TestPortal>
-    ));
-    let dom = com.getPortalDOMNode().querySelector('div');
+    instance = TestUtils.renderIntoDocument(
+      <TestPortal show={true} overlay={<h2>Test</h2>}></TestPortal>
+    );
+    let dom = instance.getPortalDOMNode();
+    expect(dom.tagName).toEqual('H2');
     expect(dom.textContent).toEqual('Test');
+  });
+  it('will unmount if property show is false', () => {
+    instance = TestUtils.renderIntoDocument(
+      <TestPortal show={false} overlay={<h2>Test</h2>}></TestPortal>
+    );
+    let dom = instance.getPortalDOMNode();
+    expect(dom).toEqual(null);
   });
 });

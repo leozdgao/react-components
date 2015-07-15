@@ -7,6 +7,11 @@ jest.dontMock('../src/actionButton.jsx');
 
 let text = 'Submit', com, button;
 describe('Test component: ActionButton', () => {
+  afterEach(() => {
+    if(com && TestUtils.isCompositeComponent(com) && com.isMounted()) {
+      React.unmountComponentAtNode(React.findDOMNode(com));
+    }
+  });
   it('take children as text', () => {
     com = TestUtils.renderIntoDocument(
       <ActionButton>{text}</ActionButton>
