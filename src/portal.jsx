@@ -3,7 +3,7 @@ import React from 'react';
 export default React.createClass({
   propTypes: {
     show: React.PropTypes.bool,
-    container: React.PropTypes.element // dom element
+    container: React.PropTypes.object // dom element
   },
   getDefaultProps: function() {
     return {

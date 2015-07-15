@@ -38,4 +38,11 @@ describe('Test portal component', () => {
     let dom = instance.getPortalDOMNode();
     expect(dom).toEqual(null);
   });
+  it('can be append to any specific container', () => {
+    let node = document.createElement('div');
+    instance = TestUtils.renderIntoDocument(
+      <TestPortal show={true} container={node} overlay={<h2>Test</h2>}></TestPortal>
+    );
+    expect(node.querySelector('h2').textContent).toEqual('Test');
+  });
 });
