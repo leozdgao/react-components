@@ -12,25 +12,16 @@ export default React.createClass({
   },
   componentDidMount: function() {
     // render overlay here
-    this._triggerByProps(this.props);
+    this._triggerByProps(!!this.props.show);
   },
   componentDidUpdate: function() {
-    this._triggerByProps(this.props);
+    this._triggerByProps(!!this.props.show);
   },
   render () {
     return null; // do not render here
   },
   _getContainerDOMNode () {
-    let container;
-    if(this.props.container) container = React.findDOMNode(this.props.container);
-    else {
-      this._temp = container = document.createElement('div');
-
-      let dom = React.findDOMNode(this), docElem = dom ? dom.ownerDocument : document;
-      docElem.body.appendChild(container);
-    }
-
-    return container;
+    return this.props.container ? React.findDOMNode(this.props.container): document.body;
   },
   _getOverlay () {
     return React.Children.only(this.props.children);
@@ -42,8 +33,8 @@ export default React.createClass({
 
     return null;
   },
-  _triggerByProps (props) {
-    if(props.show) {
+  _triggerByProps (show) {
+    if(show) {
       this._mountContainer(); // mount container and overlay
     }
     else {
@@ -51,15 +42,20 @@ export default React.createClass({
     }
   },
   _mountContainer () {
-    this._instance = React.render(this._getOverlay(), this._getContainerDOMNode());
-  },
-  _unmountContainer () {
-    if(this._temp) {
-      this._temp.parentNode.removeChild(this._temp);
-      this._temp = null;
+    if(!this._target) {
+      this._target = document.createElement('div');
+      this._getContainerDOMNode().appendChild(this._target);
     }
 
-    React.unmountComponentAtNode(this._getContainerDOMNode());
-    this._instance = null;
+    this._instance = React.render(this._getOverlay(), this._target);
+  },
+  _unmountContainer () {
+    if(this._target) {
+      React.unmountComponentAtNode(this._target);
+      this._instance = null;
+
+      this._getContainerDOMNode().removeChild(this._target);
+      this._target = null;
+    }
   }
 });

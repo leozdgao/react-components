@@ -14,7 +14,7 @@ var Modal = React.createClass({
   },
   getInitialState: function() {
     return {
-      
+      show: false
     };
   },
   componentDidMount: function() {
@@ -27,16 +27,33 @@ var Modal = React.createClass({
     window.removeEventListener('resize', this._adjustPosition);
   },
   render () {
+    let modal = (
+      <div className={this.props.modalClassName}>
+        {this.props.children}
+      </div>
+    );
+
     return (
-      <Portal>
-        <div>
-          {this.props.backdrop ? <div className={this.props.backdropClassName}></div> : null}
-          <div className={this.props.modalClassName}>
-            {this.props.children}
+      <Portal show={this.state.show}>
+        {this.props.backdrop ? (
+          <div>
+            <div className={this.props.backdropClassName} onClick={this._handleBackdropClick}></div>
+            {modal}
           </div>
-        </div>
+        ): modal}
       </Portal>
     );
+  },
+  show () {
+    this.setState({show: true});
+  },
+  hide () {
+    this.setState({show: false});
+  },
+  _handleBackdropClick () {
+    if(this.props.backdrop && this.props.backdrop != 'static') {
+      this.hide();
+    }
   }
 });
 
