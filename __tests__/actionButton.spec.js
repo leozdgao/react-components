@@ -1,5 +1,5 @@
 import React from 'react/addons';
-import Promise from 'promise';
+import Promise from 'promise-polyfill';
 import ActionButton from '../src/actionButton.jsx';
 let TestUtils = React.addons.TestUtils;
 
@@ -45,6 +45,16 @@ describe('Test component: ActionButton', () => {
       }, 200);
     });
     assertAsyncAction(action, text);
+  });
+  it('accept an function return a promise', () => {
+    let action = () => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve('text');
+        }, 200);
+      });
+    };
+    assertAsyncAction(action, 'text');
   });
 });
 

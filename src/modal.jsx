@@ -28,7 +28,7 @@ var Modal = React.createClass({
   },
   render () {
     let modal = (
-      <div className={this.props.modalClassName}>
+      <div className={this.props.modalClassName} style={{left: this.state.left}}>
         {this.props.children}
       </div>
     );
@@ -54,6 +54,11 @@ var Modal = React.createClass({
     if(this.props.backdrop && this.props.backdrop != 'static') {
       this.hide();
     }
+  },
+  _adjustPosition () {
+    let vpWidth = document.documentElement.clientWidth || document.body.clientWidth;
+    let mdWidth = this.props.width;
+    this.setState({left: vpWidth / 2 - mdWidth / 2});
   }
 });
 

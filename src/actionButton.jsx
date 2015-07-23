@@ -71,12 +71,16 @@ export default React.createClass({
         action.call(null, e, callback);
       }
       else {
-        if(type(action) == 'object' && type(action.then) == 'function') { // action is promise
+        if(type(action.then) == 'function') { // action is promise
           action.then.call(action, onResolved, onError);
         }
         else { // it is a sync action
           let ret = action.call(null, e);
-          onResolved.call(null, ret);
+          if(type(ret.then) == 'function')
+            ret.then.call(ret, onResolved, onError);
+          else {
+            onResolved.call(null, ret);
+          }
         }
       }
     }
