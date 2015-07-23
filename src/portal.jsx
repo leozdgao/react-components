@@ -14,24 +14,23 @@ export default React.createClass({
     // render overlay here
     this._triggerByProps(this.props);
   },
-  componentWillReceiveProps: function(nextProps) {
-    this._triggerByProps(nextProps);
+  componentDidUpdate: function() {
+    this._triggerByProps(this.props);
   },
   render () {
     return null; // do not render here
   },
   _getContainerDOMNode () {
-    if(!this._container) {
-      if(this.props.container) this._container = React.findDOMNode(this.props.container);
-      else {
-        this._container = document.createElement('div');
+    let container;
+    if(this.props.container) container = React.findDOMNode(this.props.container);
+    else {
+      this._temp = container = document.createElement('div');
 
-        let dom = React.findDOMNode(this), docElem = dom ? dom.ownerDocument : document;
-        docElem.body.appendChild(this._container);
-      }
+      let dom = React.findDOMNode(this), docElem = dom ? dom.ownerDocument : document;
+      docElem.body.appendChild(container);
     }
 
-    return this._container;
+    return container;
   },
   _getOverlay () {
     return React.Children.only(this.props.children);
@@ -55,9 +54,12 @@ export default React.createClass({
     this._instance = React.render(this._getOverlay(), this._getContainerDOMNode());
   },
   _unmountContainer () {
-    if(this._container) {
-      React.unmountComponentAtNode(this._getContainerDOMNode());
-      this._instance = null;
+    if(this._temp) {
+      this._temp.parentNode.removeChild(this._temp);
+      this._temp = null;
     }
+
+    React.unmountComponentAtNode(this._getContainerDOMNode());
+    this._instance = null;
   }
 });
