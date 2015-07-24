@@ -2,17 +2,19 @@ import React from 'react';
 import cNames from 'classnames/dedupe';
 import {once, type, noop, predicate, curry} from './util';
 
+const T = React.PropTypes;
+
 export default React.createClass({
   // define property types here
   propTypes: {
     action: React.PropTypes.oneOfType([
-      React.PropTypes.func,
-      React.PropTypes.object
+      T.func, T.object
     ]),
-    onResolving: React.PropTypes.func,
-    onResolved: React.PropTypes.func,
-    onError: React.PropTypes.func,
-    only: React.PropTypes.bool
+    onResolving: T.func,
+    onResolved: T.func,
+    onError: T.func,
+    onFinish: T.func,
+    only: T.bool
   },
   getDefaultProps: function() {
     return {
@@ -57,9 +59,10 @@ export default React.createClass({
         rmLoadingClass = () => {
           this.setState({className: cNames(this.state.className, {'loading': false})});
         },
-        setDisable = curry(this._setDisableWhenOnly, this, false);
-        onResolved = once(this.props.onResolved, rmLoadingClass, setDisable),
-        onError = once(this.props.onError, rmLoadingClass, setDisable),
+        setDisable = curry(this._setDisableWhenOnly, this, false),
+        onFinish = () => { setTimeout(() => { let func = this.props.onFinish || noop; func(); }, 0) },
+        onResolved = once(this.props.onResolved, rmLoadingClass, setDisable, onFinish),
+        onError = once(this.props.onError, rmLoadingClass, setDisable, onFinish),
         callback = (err, ...args) => {
           if(err) onError.call(null, err);
           else {
@@ -76,7 +79,7 @@ export default React.createClass({
         }
         else { // it is a sync action
           let ret = action.call(null, e);
-          if(type(ret.then) == 'function')
+          if(ret && type(ret.then) == 'function')
             ret.then.call(ret, onResolved, onError);
           else {
             onResolved.call(null, ret);

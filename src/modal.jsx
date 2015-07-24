@@ -28,7 +28,7 @@ var Modal = React.createClass({
   },
   render () {
     let modal = (
-      <div className={this.props.modalClassName} style={{left: this.state.left}}>
+      <div className={this.props.modalClassName} style={{left: this.state.left, width: this.props.width}}>
         {this.props.children}
       </div>
     );
