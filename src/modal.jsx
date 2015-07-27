@@ -29,24 +29,27 @@ var Modal = React.createClass({
   componentDidMount () {
     this._adjustPosition();
   },
+  componentDidUpdate: function(prevProps, prevState) {
+    if(this.state.show && !prevState.show) React.findDOMNode(this.refs.dialog).focus();
+  },
   render () {
     return (
       <Portal show={this.state.show}>
-        <div ref="dialog" onKeyDown={this._handleKeyDown}>
-          {[this._getBackdropElement(), this._getModalElement()]}
+        <div onKeyDown={this._handleKeyDown}>
+          {this._getBackdropElement()}
+          {this._getModalElement()}
         </div>
       </Portal>
     );
   },
   show () {
-    this.setState({show: true});
-    // React.findDOMNode(this.refs.modal).focus();
+    if(this.isMounted()) this.setState({show: true});
 
     this.listenEvent(window, 'resize', this._adjustPosition);
     this.listenEvent(document, 'focus', this._handleFocus);
   },
   hide () {
-    this.setState({show: false});
+    if(this.isMounted()) this.setState({show: false});
     this.clearAllEventListener();
   },
   _getBackdropElement () {
@@ -59,7 +62,7 @@ var Modal = React.createClass({
   },
   _getModalElement () {
     return (
-      <div className={this.props.modalClassName} style={{left: this.state.left, width: this.props.width}}>
+      <div ref="dialog" className={this.props.modalClassName} tabIndex="0" style={{left: this.state.left, width: this.props.width}}>
         {this.props.children}
       </div>
     );
@@ -87,7 +90,7 @@ var Modal = React.createClass({
     let active = document.activeElement;
     let modal = React.findDOMNode(this.refs.dialog);
 
-    if (modal && modal !== active && !contains(modal, active)){
+    if (modal && modal !== active && !contains(modal, active)){ console.log('focus');
       modal.focus();
     }
   }
