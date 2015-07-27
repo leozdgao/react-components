@@ -5,17 +5,25 @@ export default React.createClass({
     show: React.PropTypes.bool,
     container: React.PropTypes.object // dom element
   },
-  getDefaultProps: function() {
+  getDefaultProps () {
     return {
       show: false
     };
   },
-  componentDidMount: function() {
+  componentDidMount () {
     // render overlay here
-    this._triggerByProps(!!this.props.show);
+    this.componentDidUpdate({});
   },
-  componentDidUpdate: function() {
-    this._triggerByProps(!!this.props.show);
+  componentDidUpdate () {
+    if(!!this.props.show) {
+      this._mountContainer(); // mount container and overlay
+    }
+    else {
+      this._unmountContainer(); // unmount container and overlay
+    }
+  },
+  componentWillUnmount () {
+    if(this._instance) this._unmountContainer();
   },
   render () {
     return null; // do not render here
@@ -32,14 +40,6 @@ export default React.createClass({
     }
 
     return null;
-  },
-  _triggerByProps (show) {
-    if(show) {
-      this._mountContainer(); // mount container and overlay
-    }
-    else {
-      this._unmountContainer(); // unmount container and overlay
-    }
   },
   _mountContainer () {
     if(!this._target) {
