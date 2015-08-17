@@ -1,9 +1,3 @@
-require('babel/register')
-
-;(function (context) {
-  context.ReactCom = {
-    ActionButton: require('./actionButton'),
-    Portal: require('./portal'),
-    Modal: require('./modal')
-  }
-})(this)
+export const ActionButton = require('./actionButton')
+export const Portal = require('./portal')
+export const Modal = require('./modal')
