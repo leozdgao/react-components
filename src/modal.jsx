@@ -32,7 +32,7 @@ const Modal = React.createClass({
   },
   getInitialState () {
     return {
-      left: this._getCurrentLeft()
+      left: 0
     }
   },
   shouldComponentUpdate (nextProps, nextState) { // need not update if not visible
@@ -52,7 +52,8 @@ const Modal = React.createClass({
     }
   },
   componentDidMount () {
-    // this._adjustPosition()
+    // adjust position in browser
+    this._adjustPosition()
   },
   componentDidUpdate (prevProps, prevState) {
     if (this.props.show && !prevProps.show) React.findDOMNode(this.refs.dialog).focus()
