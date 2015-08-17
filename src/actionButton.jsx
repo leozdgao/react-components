@@ -1,41 +1,44 @@
-import React from 'react';
-import cNames from 'classnames/dedupe';
-import {once, type, noop, predicate, curry} from './util';
+import React from 'react'
+import cNames from 'classnames/dedupe'
+import { once, type, noop, predicate, curry } from './util'
 
-const T = React.PropTypes;
+const T = React.PropTypes
 
 export default React.createClass({
   // define property types here
   propTypes: {
-    action: React.PropTypes.oneOfType([
+    className: T.string,
+    action: T.oneOfType([
       T.func, T.object
     ]),
+    disabled: T.bool,
     onResolving: T.func,
     onResolved: T.func,
     onError: T.func,
     onFinish: T.func,
-    only: T.bool
+    only: T.bool,
+    children: T.node
   },
-  getDefaultProps: function() {
+  getDefaultProps () {
     return {
       action: noop,
       onResolving: predicate,
       onResolved: noop,
       onError: noop,
       only: true // disabled button when action is executing, if false, it will handled by property
-    };
-  },
-  // handle disable property
-  componentWillReceiveProps: function(nextProps) {
-    if(nextProps.disabled != this.state.disabled) {
-      this.setState({disabled: nextProps.disabled});
     }
   },
-  getInitialState: function() {
+  // handle disable property
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.disabled !== this.state.disabled) {
+      this.setState({ disabled: nextProps.disabled })
+    }
+  },
+  getInitialState () {
     return {
       className: this.props.className || '',
       disabled: this.props.disabled || false
-    };
+    }
   },
   render () {
     return (
@@ -43,54 +46,51 @@ export default React.createClass({
         disabled={this.state.disabled ? 'disabled': null}>
         {this.props.children}
       </button>
-    );
+    )
   },
   // handle click event here
   _handleClick (e) {
     // invoke onResolving before action, the action can be canceled if onResolving return false
-    if(!this.state.disabled && this.props.onResolving() !== false) {
+    if (!this.state.disabled && this.props.onResolving() !== false) {
       // set disable if set only to true
-      this._setDisableWhenOnly(true);
+      this._setDisableWhenOnly(true)
       // add class
-      this.setState({className: cNames(this.state.className, 'loading')});
+      this.setState({ className: cNames(this.state.className, 'loading') })
 
       // declare
-      let action = this.props.action,
+      const action = this.props.action,
         rmLoadingClass = () => {
-          this.setState({className: cNames(this.state.className, {'loading': false})});
+          this.setState({ className: cNames(this.state.className, { 'loading': false }) })
         },
         setDisable = curry(this._setDisableWhenOnly, this, false),
-        onFinish = () => { setTimeout(() => { let func = this.props.onFinish || noop; func(); }, 0) },
+        onFinish = () => { setTimeout(() => { const func = this.props.onFinish || noop; func() }, 0) },
         onResolved = once(this.props.onResolved, rmLoadingClass, setDisable, onFinish),
         onError = once(this.props.onError, rmLoadingClass, setDisable, onFinish),
         callback = (err, ...args) => {
-          if(err) onError.call(null, err);
+          if (err) onError.call(null, err)
           else {
-            onResolved.apply(null, args);
+            onResolved.apply(null, args)
           }
-        };
+        }
 
-      if(action.length > 1) { // callback as second parameter
-        action.call(null, e, callback);
+      if (action.length > 1) { // callback as second parameter
+        action.call(null, e, callback)
       }
       else {
-        if(type(action.then) == 'function') { // action is promise
-          action.then.call(action, onResolved, onError);
+        if (type(action.then) === 'function') { // action is promise
+          action.then.call(action, onResolved, onError)
         }
         else { // it is a sync action
-          let ret = action.call(null, e);
-          if(ret && type(ret.then) == 'function')
-            ret.then.call(ret, onResolved, onError);
-          else {
-            onResolved.call(null, ret);
-          }
+          const ret = action.call(null, e)
+          if (ret && type(ret.then) === 'function') ret.then.call(ret, onResolved, onError)
+          else onResolved.call(null, ret)
         }
       }
     }
   },
   _setDisableWhenOnly (val) {
-    if(this.props.only) {
-      this.setState({disabled: val, className: cNames(this.state.className, {'disabled': val})});
+    if (this.props.only) {
+      this.setState({ disabled: val, className: cNames(this.state.className, { 'disabled': val }) })
     }
   }
-});
+})
