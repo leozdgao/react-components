@@ -48,6 +48,7 @@ const Modal = React.createClass({
 
     // show
     if (!this.props.show && nextProps.show) {
+      this.setState({ left: this._getCurrentLeft() })
       this.listenEvent(window, 'resize', this._adjustPosition)
       this.listenEvent(document, 'focus', this._handleFocus)
     }
