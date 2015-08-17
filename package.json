@@ -1,6 +1,6 @@
 {
   "name": "rcomponents",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Some common react component collection.",
   "main": "src/index.js",
   "scripts": {

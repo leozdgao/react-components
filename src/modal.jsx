@@ -18,7 +18,8 @@ const Modal = React.createClass({
     modalClassName: PropTypes.string,
     closable: PropTypes.bool,
     children: PropTypes.node,
-    show: PropTypes.bool
+    show: PropTypes.bool,
+    onBackdropClick: PropTypes.func
   },
   getDefaultProps () {
     return {
@@ -71,7 +72,7 @@ const Modal = React.createClass({
   _getBackdropElement () {
     if (this.props.backdrop) {
       return (
-        <div className={this.props.backdropClassName} onClick={this._handleBackdropClick}></div>
+        <div className={this.props.backdropClassName} onClick={this.props.onBackdropClick}></div>
       )
     }
     else return null
@@ -89,18 +90,8 @@ const Modal = React.createClass({
 
     return vpWidth / 2 - mdWidth / 2
   },
-  _handleBackdropClick () {
-    if (this.props.backdrop && this.props.backdrop !== 'static') {
-      this.hide()
-    }
-  },
   _adjustPosition () {
     this.setState({ left: this._getCurrentLeft() })
-  },
-  _handleKeyDown (e) {
-    if (this.props.closable && e.keyCode === keyCode.ESC) {
-      this.hide()
-    }
   },
   _handleFocus (e) {
     if (!this.isMounted()) return
