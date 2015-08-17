@@ -30,6 +30,11 @@ const Modal = React.createClass({
       show: false
     }
   },
+  getInitialState () {
+    return {
+      left: this._getCurrentLeft()
+    }
+  },
   shouldComponentUpdate (nextProps, nextState) { // need not update if not visible
     if (!this.props.show && !nextProps.show) return false
     else return true
@@ -47,7 +52,7 @@ const Modal = React.createClass({
     }
   },
   componentDidMount () {
-    this._adjustPosition()
+    // this._adjustPosition()
   },
   componentDidUpdate (prevProps, prevState) {
     if (this.props.show && !prevProps.show) React.findDOMNode(this.refs.dialog).focus()
@@ -77,15 +82,19 @@ const Modal = React.createClass({
       </div>
     )
   },
+  _getCurrentLeft () {
+    const vpWidth = document.documentElement.clientWidth || document.body.clientWidth
+    const mdWidth = this.props.width
+
+    return vpWidth / 2 - mdWidth / 2
+  },
   _handleBackdropClick () {
     if (this.props.backdrop && this.props.backdrop !== 'static') {
       this.hide()
     }
   },
   _adjustPosition () {
-    const vpWidth = document.documentElement.clientWidth || document.body.clientWidth
-    const mdWidth = this.props.width
-    this.setState({ left: vpWidth / 2 - mdWidth / 2 })
+    this.setState({ left: this._getCurrentLeft() })
   },
   _handleKeyDown (e) {
     if (this.props.closable && e.keyCode === keyCode.ESC) {
