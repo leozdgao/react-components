@@ -57,7 +57,7 @@ const Modal = React.createClass({
     this._adjustPosition()
   },
   componentDidUpdate (prevProps, prevState) {
-    if (this.props.show && !prevProps.show) React.findDOMNode(this.refs.dialog).focus()
+    if (this.props.show && !prevProps.show) this._handleFocus()
   },
   render () {
     return (
@@ -93,7 +93,7 @@ const Modal = React.createClass({
   _adjustPosition () {
     this.setState({ left: this._getCurrentLeft() })
   },
-  _handleFocus (e) {
+  _handleFocus () {
     if (!this.isMounted()) return
 
     const active = document.activeElement
