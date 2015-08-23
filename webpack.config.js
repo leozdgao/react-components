@@ -7,11 +7,18 @@ module.exports = {
   output: {
     path: path.join(__dirname, './dist'),
     filename: 'react-components.js',
-    sourceMapFilename: '[file].map'
+    libraryTarget: 'umd'
   },
-  externals: {
-    'react': 'React'
-  },
+  externals: [
+    {
+      'react': {
+        root: 'React',
+        commonjs2: 'react',
+        commonjs: 'react',
+        amd: 'react'
+      }
+    }
+  ],
   module: {
     loaders: [
       { test: /\.jsx?$/, exclude: /(node_modules|bower_components)/, loader: 'babel' }

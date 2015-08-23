@@ -1,6 +1,6 @@
 {
   "name": "rcomponents",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Some common react component collection.",
   "main": "dist/react-components.js",
   "scripts": {
